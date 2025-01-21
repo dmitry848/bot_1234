@@ -1,43 +1,35 @@
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler
+from telegram.ext.filters import Text
 
-# Токен вашего бота от BotFather
+# Токен вашего бота
 TOKEN = "7207188394:AAFjvhmcxQhguacV5tnD_crOt8HDGh__lX4"
 
-# Настройки ключевых слов и ответов
-RESPONSES = {
-    "да": "пизда",
-    "короче": "В сериале 'Как я встретил вашу маму' был точно такой же сюжет",
-    "в общем": "В сериале 'Как я встретил вашу маму' был точно такой же сюжет",
-}
+async def start(update: Update, context):
+    """Обработчик команды /start."""
+    await update.message.reply_text("Привет, я бот!")
 
+async def reply_to_text(update: Update, context):
+    """Обработчик текстовых сообщений."""
+    text = update.message.text
+    if "да" in text.lower():
+        await update.message.reply_text("пизда")
+    elif "короче" in text.lower() or "в общем" in text.lower():
+        await update.message.reply_text("В сериале 'Как я встретил вашу маму' был точно такой же сюжет")
+    else:
+        await update.message.reply_text("Что-то другое")
 
-# Обработка текстовых сообщений
-def handle_message(update: Update, context: CallbackContext) -> None:
-    # Получаем текст сообщения
-    message_text = update.message.text.lower()  # Приводим текст к нижнему регистру
-    for key_word, response in RESPONSES.items():
-        if key_word in message_text:  # Если ключевое слово найдено в сообщении
-            update.message.reply_text(response)
-            break  # Отвечаем только один раз на сообщение
-
-# Главная функция
 def main():
-    # Создаем Updater с вашим токеном
-    updater = Updater(TOKEN)
-    dispatcher = updater.dispatcher
+    """Основная функция для запуска бота."""
+    # Создаем объект Application
+    application = Application.builder().token(TOKEN).build()
 
-    # Обработчик команды /start
-    dispatcher.add_handler(CommandHandler("start", start))
-
-    # Обработчик текстовых сообщений
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    # Добавляем обработчики
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(Text & ~Text.command, reply_to_text))
 
     # Запуск бота
-    updater.start_polling()
-    print("Бот запущен. Нажмите Ctrl+C для остановки.")
-    updater.idle()
+    application.run_polling()
 
-# Запуск кода
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
