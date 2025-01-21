@@ -1,6 +1,5 @@
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler
-from telegram.ext.filters import Text
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 # Токен вашего бота
 TOKEN = "7207188394:AAFjvhmcxQhguacV5tnD_crOt8HDGh__lX4"
@@ -13,7 +12,7 @@ async def reply_to_text(update: Update, context):
     """Обработчик текстовых сообщений."""
     text = update.message.text
     if "да" in text.lower():
-        await update.message.reply_text("пизда")
+        await update.message.reply_text("борода")
     elif "короче" in text.lower() or "в общем" in text.lower():
         await update.message.reply_text("В сериале 'Как я встретил вашу маму' был точно такой же сюжет")
     else:
@@ -26,7 +25,7 @@ def main():
 
     # Добавляем обработчики
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(Text & ~Text.command, reply_to_text))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply_to_text))
 
     # Запуск бота
     application.run_polling()
